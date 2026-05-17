@@ -1,0 +1,1 @@
+""" Definições da ResNet34 """

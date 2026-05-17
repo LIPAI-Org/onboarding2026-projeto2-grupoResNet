@@ -1,0 +1,1 @@
+""" Carregar imagens e definir labels"""

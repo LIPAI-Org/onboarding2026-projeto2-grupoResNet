@@ -1,0 +1,1 @@
+""" Centraliza a lógica do DataLoader() """

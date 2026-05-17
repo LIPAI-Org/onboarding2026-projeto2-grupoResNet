@@ -1,0 +1,1 @@
+""" Responsável pelos calculos de custo durante o treinamento """

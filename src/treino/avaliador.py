@@ -1,0 +1,1 @@
+""" Responsável pelo calculo das métricas de treinamento (acurácia, etc)"""

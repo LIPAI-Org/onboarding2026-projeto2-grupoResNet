@@ -1,0 +1,1 @@
+""" Para poder ter os caminhos em variáveis """

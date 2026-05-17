@@ -1,0 +1,1 @@
+""" define as transformadas e, caso use, os aumentos de dados"""

@@ -1,0 +1,1 @@
+""" Calcula o nro de parâmetros e os GFLOPS """

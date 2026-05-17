@@ -1,0 +1,1 @@
+""" Gera os gráficos finais comparativos """

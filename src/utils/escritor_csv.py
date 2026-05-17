@@ -1,0 +1,1 @@
+""" Escrever os resultados na planilha final """

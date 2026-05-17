@@ -1,0 +1,1 @@
+""" Especificações da ResNet18 """
