@@ -18,5 +18,7 @@ PATH_RESULTS = PATH_RAIZ + "\\results"
 
 # Paths mais específicos (+ usados)
 PATH_PLANILHA_RESULTADOS = PATH_RESULTS + "\\planilha_resultados.csv"
-# FAZER: Colocar os paths dos splits de treino, teste e validação de cada dataset
+PATH_SPLITS = PATH_DATA + "\\splits"
+PATH_SPLIT_DISPLASIA = PATH_SPLITS + "\\manifest_split_multiclass_NDB-UFES.csv"
+PATH_SPLIT_NDB = PATH_SPLITS + "\\manifest_split_oralepithelium"
 # Analisar, ao longo do desenvolvimento, outros paths necessários, se for usar mt coloquem aqui!
