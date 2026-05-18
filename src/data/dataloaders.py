@@ -1,7 +1,6 @@
 """ Centraliza a lógica do DataLoader() """
 
 import configs.datasets.base as base
-import torch
 from torch.utils.data import DataLoader
 
 class DataLoaders:
