@@ -1,7 +1,7 @@
 """ Factory de modelos, facilita criação :) """
 
-from .resnet18 import create_resnet18
-from .resnet34 import create_resnet34
+from src.modelos.modelo_resnet18 import create_resnet18
+from src.modelos.modelo_resnet34 import create_resnet34
 
 
 def get_model(
