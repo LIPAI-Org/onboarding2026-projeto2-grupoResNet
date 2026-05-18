@@ -1,0 +1,1 @@
+repetition,seed,dataset,model,training_mode,augmentation,acc_test,f1_macro_test,f1_weighted_test,num_params,gflops,best_epoch,val_acc_best
