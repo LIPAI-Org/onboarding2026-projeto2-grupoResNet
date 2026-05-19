@@ -8,7 +8,6 @@ class DataLoaders:
         self.config = config
         self.datasets = datasets
         
-        # Define um batch_size padrão caso ele não esteja mapeado na sua config ainda
         self.batch_size = getattr(self.config, 'batch_size', 32)
 
     def _obter_datasets_por_nome(self, cenario: str):
@@ -30,14 +29,20 @@ class DataLoaders:
         raise ValueError(f"Cenário desconhecido: {cenario}")
 
     def criar_dataloaders_base(self):
-        """criar os dataloaders para treino e teste sem aumento"""
-        # Chama a função correta da sua classe datasets para pegar os objetos Dataset
-        train_dataset, test_dataset = self._obter_datasets_por_nome(cenario="base")
+        """criar os dataloaders para treino, validação e teste sem aumento"""
+        train_dataset, val_dataset, test_dataset = self._obter_datasets_por_nome(cenario="base")
         
         train_loader = DataLoader(
             dataset=train_dataset, 
             batch_size=self.batch_size, 
             shuffle=True,
+            num_workers=4,
+            pin_memory=True
+        )
+        val_loader = DataLoader(
+            dataset=val_dataset, 
+            batch_size=self.batch_size, 
+            shuffle=False,
             num_workers=4,
             pin_memory=True
         )
@@ -48,17 +53,23 @@ class DataLoaders:
             num_workers=4,
             pin_memory=True
         )
-        return train_loader, test_loader
+        return train_loader, val_loader, test_loader
     
     def criar_dataloaders_aumentados(self):
-        """criar os dataloaders para treino e teste com aumento"""
-        # Chama a função correta da sua classe datasets para pegar os objetos Dataset
-        train_dataset_aumentado, test_dataset_aumentado = self._obter_datasets_por_nome(cenario="aumentado")
+        """criar os dataloaders para treino, validação e teste com aumento"""
+        train_dataset_aumentado, val_dataset_aumentado, test_dataset_aumentado = self._obter_datasets_por_nome(cenario="aumentado")
         
         train_loader = DataLoader(
             dataset=train_dataset_aumentado, 
             batch_size=self.batch_size, 
             shuffle=True,
+            num_workers=4,
+            pin_memory=True
+        )
+        val_loader = DataLoader(
+            dataset=val_dataset_aumentado, 
+            batch_size=self.batch_size, 
+            shuffle=False,
             num_workers=4,
             pin_memory=True
         )
@@ -69,4 +80,4 @@ class DataLoaders:
             num_workers=4,
             pin_memory=True
         )
-        return train_loader, test_loader
+        return train_loader, val_loader, test_loader

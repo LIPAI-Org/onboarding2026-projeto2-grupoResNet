@@ -42,32 +42,36 @@ class datasets:
         self.csv_ROI = 'data/splits/manifest_split_oralepitheliumdb.csv'
         self.csv_NDB = 'data/splits/manifest_split_multiclass_NDB-UFES.csv'
         
-        gerador_transformadas = transformadas.transformada_dados(config=self.config, usar_augmentation=False)
-        self.treino_base, self.teste_base = gerador_transformadas.transformadas_base()
+        gerador_base = transformadas.transformada_dados(config=self.config, usar_augmentation=False)
+        self.treino_base, self.teste_base = gerador_base.obter_transformadas()
         
         gerador_aumentado = transformadas.transformada_dados(config=self.config, usar_augmentation=True)
-        self.treino_aumentado, self.teste_aumentado = gerador_aumentado.transformada_dados_aumentada()
+        self.treino_aumentado, _ = gerador_aumentado.obter_transformadas()
 
     def carregar_dados_ROI_base(self):
-        """carregar os dados do dataset ROI sem aumento (Treino e Validação/Teste)"""
+        """carregar os dados do dataset ROI sem aumento (Treino, Validação e Teste)"""
         train_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='train', transform=self.treino_base)
-        test_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='val', transform=self.teste_base) 
-        return train_dataset, test_dataset
+        val_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='val', transform=self.teste_base) 
+        test_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='test', transform=self.teste_base) 
+        return train_dataset, val_dataset, test_dataset
 
     def carregar_dados_NDB_base(self):
-        """carregar os dados do dataset NDB-UFES sem aumento"""
+        """carregar os dados do dataset NDB-UFES sem aumento (Treino, Validação e Teste)"""
         train_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='train', transform=self.treino_base)
-        test_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='val', transform=self.teste_base)
-        return train_dataset, test_dataset
+        val_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='val', transform=self.teste_base)
+        test_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='test', transform=self.teste_base)
+        return train_dataset, val_dataset, test_dataset
 
     def carregar_dados_ROI_aumentado(self):
         """carregar os dados do dataset ROI com aumento no treino"""
         train_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='train', transform=self.treino_aumentado)
-        test_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='val', transform=self.teste_aumentado)
-        return train_dataset, test_dataset
+        val_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='val', transform=self.teste_base)
+        test_dataset = HistologiaDatasetCustom(self.root_path_ROI, self.csv_ROI, split='test', transform=self.teste_base)
+        return train_dataset, val_dataset, test_dataset
 
     def carregar_dados_NDB_aumentado(self):
         """carregar os dados do dataset NDB-UFES com aumento no treino"""
         train_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='train', transform=self.treino_aumentado)
-        test_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='val', transform=self.teste_aumentado)
-        return train_dataset, test_dataset
+        val_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='val', transform=self.teste_base)
+        test_dataset = HistologiaDatasetCustom(self.root_path_NDB, self.csv_NDB, split='test', transform=self.teste_base)
+        return train_dataset, val_dataset, test_dataset
