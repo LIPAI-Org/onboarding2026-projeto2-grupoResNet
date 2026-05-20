@@ -8,7 +8,7 @@ from torchvision.models import (
 )
 
 
-def create_resnet18(num_classes, training_mode="fs"):
+def create_resnet18(num_classes, training_mode):
 
     training_mode = training_mode.lower()
 

@@ -5,14 +5,17 @@ from torch.utils.data import DataLoader
 import configs.configs_base as cb
 
 class DataLoaders:
-    def __init__(self, config: base.DatasetConfig, datasets,batch_size=cb.BATCH_SIZE):
+    def __init__(self, config: base.DatasetConfig, datasets, batch_size=cb.BATCH_SIZE):
         self.config = config
         self.datasets = datasets
         self.batch_size = batch_size
 
-    def _obter_datasets_por_nome(self, cenario: str):
+    def _obter_datasets_por_nome(self, cenario=None):
         """Método auxiliar para mapear qual função da sua classe datasets deve ser chamada."""
         nome_dataset = self.config.nome.lower()
+        
+        if cenario is None:
+            cenario = self.datasets.escolha_transformada
         
         if cenario == "base":
             if "roi" in nome_dataset or "displasia" in nome_dataset:

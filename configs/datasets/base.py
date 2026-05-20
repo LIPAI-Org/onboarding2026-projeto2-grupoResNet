@@ -1,5 +1,4 @@
 """ Configs bases dos datasets """
-
 from dataclasses import dataclass
 from typing import Literal
 
@@ -7,9 +6,9 @@ TipoTarefa = Literal["binario", "multi"]
 
 @dataclass(frozen=True)
 class DatasetConfig:
-    nome: str
     tipo_tarefa: TipoTarefa
     nro_classes: int
+    nome: str 
     tam_input: tuple[int, int] = (224, 224)
     canais_input: int = 3   # RGB
 

@@ -4,7 +4,7 @@ import pandas as pd
 from PIL import Image
 from torch.utils.data import Dataset
 import src.data.transformadas as transformadas
-
+import configs.datasets.base as base
 
 class HistologiaDatasetCustom(Dataset):
     """Classe auxiliar para ler imagens e labels a partir de um arquivo CSV específico."""
@@ -12,7 +12,12 @@ class HistologiaDatasetCustom(Dataset):
         self.root_dir = root_dir
         self.transform = transform
         
-        df = pd.read_csv(csv_path)
+        try:
+            df = pd.read_csv(csv_path)
+        except Exception as e:
+            raise FileNotFoundError(
+                f"Erro ao carregar o arquivo CSV em '{csv_path}'. ")
+            
         self.data = df[df['split'] == split].reset_index(drop=True)
 
     def __len__(self):
@@ -23,7 +28,6 @@ class HistologiaDatasetCustom(Dataset):
         label = int(self.data.iloc[idx]['label'])
         
         img_path = os.path.join(self.root_dir, img_relative_path)
-        
         image = Image.open(img_path).convert('RGB')
         
         if self.transform:
@@ -33,15 +37,15 @@ class HistologiaDatasetCustom(Dataset):
 
 
 class datasets:
-    def __init__(self, config):
+    def __init__(self, config: base.DatasetConfig, escolha_transformada: str):
         self.config = config
+        self.escolha_transformada = escolha_transformada
         
         self.root_path_ROI = 'data/raw/Original_ROI_images'
         self.root_path_NDB = 'data/raw/images_NDB-UFES'
-        
         self.csv_ROI = 'data/splits/manifest_split_oralepitheliumdb.csv'
         self.csv_NDB = 'data/splits/manifest_split_multiclass_NDB-UFES.csv'
-        
+
         gerador_base = transformadas.transformada_dados(config=self.config, usar_augmentation=False)
         self.treino_base, self.teste_base = gerador_base.obter_transformadas()
         
