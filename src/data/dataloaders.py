@@ -2,13 +2,13 @@
 
 import configs.datasets.base as base
 from torch.utils.data import DataLoader
+import configs.configs_base as cb
 
 class DataLoaders:
-    def __init__(self, config: base.DatasetConfig, datasets):
+    def __init__(self, config: base.DatasetConfig, datasets,batch_size=cb.BATCH_SIZE):
         self.config = config
         self.datasets = datasets
-        
-        self.batch_size = getattr(self.config, 'batch_size', 32)
+        self.batch_size = batch_size
 
     def _obter_datasets_por_nome(self, cenario: str):
         """Método auxiliar para mapear qual função da sua classe datasets deve ser chamada."""
