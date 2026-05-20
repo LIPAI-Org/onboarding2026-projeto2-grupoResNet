@@ -5,16 +5,25 @@ import torch
 
 from tqdm import tqdm
 
-from .metricas import calculate_metrics
-
+from src.treino.metricas import calculate_metrics
+from src.utils.seed import definir_seed
+from configs.datasets.base import DatasetConfig
+import configs.configs_base as cb
 
 def evaluate_model(
     model,
     test_loader,
-    criterion,
-    device,
+    config_dataset: DatasetConfig,
+    seed= 42,
     checkpoint_path=None
 ):
+
+    definir_seed(seed)
+    device = cb.DEVICE
+    if config_dataset.is_multi:
+        criterion = cb.CRITERION_MULTI
+    else:
+        criterion = cb.CRITERION_BIN
 
     if checkpoint_path is not None:
 
@@ -48,6 +57,15 @@ def evaluate_model(
             images = images.to(device)
             labels = labels.to(device)
 
+            if config_dataset.is_binario():
+                labels = labels.float()
+                if labels.ndim == 1:
+                    labels = labels.unsqueeze(1)
+            else:
+                labels = labels.long()
+                if labels.ndim > 1:
+                    labels = labels.squeeze(1)
+
             outputs = model(images)
 
             loss = criterion(
@@ -55,10 +73,13 @@ def evaluate_model(
                 labels
             )
 
-            preds = torch.argmax(
-                outputs,
-                dim=1
-            )
+            if config_dataset.is_multi():
+                preds = torch.argmax(
+                    outputs,
+                    dim=1
+                )
+            else:
+                preds = (torch.sigmoid(outputs) >= 0.5).long()
 
             test_losses.append(
                 loss.item()

@@ -1,7 +1,6 @@
 """ Onde o treino ocorre """
 
 import os
-import random
 import numpy as np
 import torch
 
@@ -11,38 +10,32 @@ from sklearn.metrics import (
     accuracy_score
 )
 
-
-def set_seed(seed):
-
-    random.seed(seed)
-
-    np.random.seed(seed)
-
-    torch.manual_seed(seed)
-
-    torch.cuda.manual_seed(seed)
-
-    torch.cuda.manual_seed_all(seed)
-
-    torch.backends.cudnn.deterministic = True
-
-    torch.backends.cudnn.benchmark = False
-
+import configs.configs_base as cb
+from src.utils.seed import definir_seed
+from configs.datasets.base import DatasetConfig
 
 def train_model(
     model,
     train_loader,
     val_loader,
-    criterion,
-    optimizer,
-    device,
-    num_epochs=50,
+    config_dataset: DatasetConfig,
     seed=42,
     checkpoint_path=None,
     scheduler=None
 ):
 
-    set_seed(seed)
+    definir_seed(seed)
+    device = cb.DEVICE
+    num_epochs = cb.NUM_EPOCAS
+    optimizer = cb.OTIMIZADOR(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        lr=cb.TAXA_APRENDIZADO
+    )
+
+    if config_dataset.is_multi:
+        criterion = cb.CRITERION_MULTI
+    else:
+        criterion = cb.CRITERION_BIN
 
     model = model.to(device)
 
@@ -82,6 +75,15 @@ def train_model(
 
             labels = labels.to(device)
 
+            if config_dataset.is_binario():
+                labels = labels.float()
+                if labels.ndim == 1:
+                    labels = labels.unsqueeze(1)
+            else:
+                labels = labels.long()
+                if labels.ndim > 1:
+                    labels = labels.squeeze(1)
+
             optimizer.zero_grad()
 
             outputs = model(images)
@@ -95,10 +97,13 @@ def train_model(
 
             optimizer.step()
 
-            preds = torch.argmax(
-                outputs,
-                dim=1
-            )
+            if config_dataset.is_multi():
+                preds = torch.argmax(
+                    outputs,
+                    dim=1
+                )
+            else:
+                preds = (torch.sigmoid(outputs) >= 0.5).long()
 
             train_losses.append(
                 loss.item()
@@ -142,6 +147,15 @@ def train_model(
 
                 labels = labels.to(device)
 
+                if config_dataset.is_binario():
+                    labels = labels.float()
+                    if labels.ndim == 1:
+                        labels = labels.unsqueeze(1)
+                else:
+                    labels = labels.long()
+                    if labels.ndim > 1:
+                        labels = labels.squeeze(1)
+
                 outputs = model(images)
 
                 loss = criterion(
@@ -149,10 +163,13 @@ def train_model(
                     labels
                 )
 
-                preds = torch.argmax(
-                    outputs,
-                    dim=1
-                )
+                if config_dataset.is_multi():
+                    preds = torch.argmax(
+                        outputs,
+                        dim=1
+                    )
+                else:
+                    preds = (torch.sigmoid(outputs) >= 0.5).long()
 
                 val_losses.append(
                     loss.item()
