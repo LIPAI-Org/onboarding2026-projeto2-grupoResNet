@@ -14,9 +14,9 @@ MODELOS = [
 ]
 
 MODOS_TREINAMENTO = [
-    "from_scratch",
-    "backbone_congelado",
-    "fine_tuning_completo"
+    "fs",
+    "pt_fc",
+    "pt_all"
 ]
 
 AUMENTO = [
