@@ -15,7 +15,6 @@ def evaluate_model(
     test_loader,
     config_dataset: DatasetConfig,
     seed=42,
-    checkpoint_path=None
 ):
     definir_seed(seed)
     device = cb.DEVICE
@@ -24,15 +23,6 @@ def evaluate_model(
         criterion = cb.CRITERION_MULTI
     else:
         criterion = cb.CRITERION_BIN
-
-    if checkpoint_path is not None:
-        checkpoint = torch.load(
-            checkpoint_path,
-            map_location=device
-        )
-        model.load_state_dict(
-            checkpoint["model_state_dict"]
-        )
 
     model = model.to(device)
     model.eval()
