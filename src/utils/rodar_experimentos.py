@@ -17,6 +17,19 @@ import configs.grid_experimentos as gdexp
 def rodar_experimento(
         experimento: dict
 ) -> None:
+    """
+    Roda um experimento específico, com experimento sendo definido como:\n
+    experimento = {
+        "seed": int,
+        "modelo": str,
+        "dataset": str,
+        "dataset_config": asdict(DatasetConfig),
+        "modo_treinamento": str,
+        "aumento": bool
+    }
+    para os valores possíveis de cada entrada,
+    referir-se ao arquivo configs/grid_experimentos.py
+    """
     seed = experimento.get("seed")
     definir_seed(seed)
 
@@ -81,6 +94,16 @@ def rodar_experimentos_baseado_em_parametros(
         aumento: bool | None = None,
         dataset: str | None = None,
 ):
+    """
+    Roda os experimentos a partir de valores fixos
+    possivelmente passados como parâmetros.
+
+    Ex:
+    rodar_experimentos_baseado_em_parametros(seed=42, modelo="resnet18")
+
+    (Isso roda todos os experimentos em que a seed seja 42
+    e o modelo seja a resnet18).
+    """
     seeds = [seed] if seed is not None else gdexp.SEEDS
     modelos = [modelo] if modelo is not None else gdexp.MODELOS
     modos_treinamento = [modo_treinamento] if modo_treinamento is not None else gdexp.MODOS_TREINAMENTO
@@ -106,5 +129,8 @@ def rodar_experimentos_baseado_em_parametros(
         rodar_experimento(experimento)
 
 def rodar_todos_experimentos():
+    """
+    Roda todo experimento possível.
+    """
     for experimento in gdexp.GRID_EXPERIMENTOS:
         rodar_experimento(experimento)
