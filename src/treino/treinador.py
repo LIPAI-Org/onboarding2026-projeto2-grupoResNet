@@ -47,7 +47,7 @@ def train_model(
     best_epoch = 0
 
     for epoch in range(num_epochs):
-        "FASE DE TREINO"
+        # FASE DE TREINO
        
         model.train()
         train_losses = []
@@ -91,7 +91,7 @@ def train_model(
         train_loss = np.mean(train_losses)
         train_acc = accuracy_score(train_targets, train_preds)
 
-        "FASE DE VALIDAÇÃO"
+        # FASE DE VALIDAÇÃO
         model.eval()
         val_losses = []
         val_preds = []

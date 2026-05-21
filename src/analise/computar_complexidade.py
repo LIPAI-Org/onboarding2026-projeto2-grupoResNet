@@ -3,16 +3,18 @@
 import os
 import csv
 
-from treino.custo import (
+from src.treino.custo import (
     count_parameters,
     count_trainable_parameters,
-    estimate_gflops
+    calcular_gflops
 )
+from configs.datasets.base import DatasetConfig
 
 
 def compute_model_complexity(
     model,
-    model_name
+    model_name,
+    config_dataset: DatasetConfig
 ):
 
     total_params = count_parameters(
@@ -25,8 +27,9 @@ def compute_model_complexity(
         )
     )
 
-    gflops = estimate_gflops(
-        model
+    gflops = calcular_gflops(
+        model,
+        config_dataset
     )
 
     results = {
