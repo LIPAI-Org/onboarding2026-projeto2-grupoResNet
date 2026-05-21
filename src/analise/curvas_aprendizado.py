@@ -61,6 +61,14 @@ def plotar_e_salvar_acc(
     """
     Plota e salva a acuracia do treino e da validação para
     o diretório apontado por paths.PATH_PLOTS.
+    Nota: history vem da função de treino em treinador.py, definida
+    assim:
+    history = {
+        "train_loss": [],
+        "val_loss": [],
+        "train_acc": [],
+        "val_acc": []
+    }
     """
     
     if not os.path.isdir(paths.PATH_PLOTS):
