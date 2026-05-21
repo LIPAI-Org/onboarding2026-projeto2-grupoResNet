@@ -29,7 +29,7 @@ def plotar_e_salvar_loss(
     if not os.path.isdir(paths.PATH_PLOTS):
         os.makedirs(paths.PATH_PLOTS, exist_ok=True)
     
-    nome_arq = f"loss_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.png"
+    nome_arq = f"loss_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.pdf"
     caminho_saida = os.path.join(paths.PATH_PLOTS, nome_arq)
 
     epocas = range(1, NUM_EPOCAS + 1)
@@ -45,7 +45,7 @@ def plotar_e_salvar_loss(
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    plt.savefig(caminho_saida, dpi=300, bbox_inches="tight")
+    plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
 
     return caminho_saida
@@ -74,7 +74,7 @@ def plotar_e_salvar_acc(
     if not os.path.isdir(paths.PATH_PLOTS):
         os.makedirs(paths.PATH_PLOTS, exist_ok=True)
     
-    nome_arq = f"acc_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.png"
+    nome_arq = f"acc_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.pdf"
     caminho_saida = os.path.join(paths.PATH_PLOTS, nome_arq)
 
     epocas = range(1, NUM_EPOCAS + 1)
@@ -90,7 +90,7 @@ def plotar_e_salvar_acc(
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    plt.savefig(caminho_saida, dpi=300, bbox_inches="tight")
+    plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
 
     return caminho_saida
