@@ -1,6 +1,5 @@
 """ Onde o treino ocorre """
 
-import os
 import numpy as np
 import torch
 from tqdm import tqdm
@@ -17,7 +16,6 @@ def train_model(
     val_loader,
     config_dataset: DatasetConfig,
     seed=42,
-    checkpoint_path=None,
     scheduler=None
 ):
     definir_seed(seed)
@@ -47,7 +45,7 @@ def train_model(
     best_epoch = 0
 
     for epoch in range(num_epochs):
-        "FASE DE TREINO"
+        # FASE DE TREINO
        
         model.train()
         train_losses = []
@@ -91,7 +89,7 @@ def train_model(
         train_loss = np.mean(train_losses)
         train_acc = accuracy_score(train_targets, train_preds)
 
-        "FASE DE VALIDAÇÃO"
+        # FASE DE VALIDAÇÃO
         model.eval()
         val_losses = []
         val_preds = []
@@ -142,23 +140,6 @@ def train_model(
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             best_epoch = epoch + 1
-
-            if checkpoint_path is not None:
-                checkpoint_dir = os.path.dirname(checkpoint_path)
-                if checkpoint_dir != "":
-                    os.makedirs(checkpoint_dir, exist_ok=True)
-
-                torch.save(
-                    {
-                        "epoch": best_epoch,
-                        "seed": seed,
-                        "best_val_acc": best_val_acc,
-                        "model_state_dict": model.state_dict(),
-                        "optimizer_state_dict": optimizer.state_dict(),
-                        "history": history
-                    },
-                    checkpoint_path
-                )
 
     results = {
         "history": history,

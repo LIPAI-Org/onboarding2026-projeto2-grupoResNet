@@ -26,8 +26,7 @@ results = train_model(
     model=model, 
     train_loader=train_loader, 
     val_loader=val_loader, 
-    config_dataset=data, 
-    checkpoint_path="checkpoint.pth", 
+    config_dataset=data,  
     scheduler=None
 )
 
@@ -36,7 +35,6 @@ teste_results = evaluate_model(
     test_loader=test_loader,
     config_dataset=data,
     seed=42,
-    checkpoint_path="checkpoint.pth"
 )
 
 print("\n================ RESULTADOS FINAIS DO TESTE ================")

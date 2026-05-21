@@ -1,0 +1,1 @@
+### Pasta para guardar os plots de loss e acuracia

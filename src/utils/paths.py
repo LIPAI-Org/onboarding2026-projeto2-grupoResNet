@@ -21,4 +21,5 @@ PATH_PLANILHA_RESULTADOS = PATH_RESULTS + "\\planilha_resultados.csv"
 PATH_SPLITS = PATH_DATA + "\\splits"
 PATH_SPLIT_DISPLASIA = PATH_SPLITS + "\\manifest_split_multiclass_NDB-UFES.csv"
 PATH_SPLIT_NDB = PATH_SPLITS + "\\manifest_split_oralepithelium"
+PATH_PLOTS = PATH_RESULTS + "\\plots"
 # Analisar, ao longo do desenvolvimento, outros paths necessários, se for usar mt coloquem aqui!
