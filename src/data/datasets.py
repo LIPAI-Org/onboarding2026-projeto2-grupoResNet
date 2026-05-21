@@ -6,6 +6,7 @@ from torch.utils.data import Dataset
 import src.data.transformadas as transformadas
 import configs.datasets.base as base
 
+
 class HistologiaDatasetCustom(Dataset):
     """Classe auxiliar para ler imagens e labels a partir de um arquivo CSV específico."""
     def __init__(self, root_dir, csv_path, split, transform=None):
@@ -14,18 +15,33 @@ class HistologiaDatasetCustom(Dataset):
         
         try:
             df = pd.read_csv(csv_path)
+            if 'split' not in df.columns and 'sets' not in df.columns and ';' in ''.join(df.columns):
+                df = pd.read_csv(csv_path, sep=';')
         except Exception as e:
             raise FileNotFoundError(
-                f"Erro ao carregar o arquivo CSV em '{csv_path}'. ")
+                f"Erro ao carregar o arquivo CSV em '{csv_path}'. "
+                f"Certifique-se de que o caminho está correto. Detalhes: {e}"
+            )
             
-        self.data = df[df['split'] == split].reset_index(drop=True)
+        self.col_split = 'split' if 'split' in df.columns else ('sets' if 'sets' in df.columns else None)
+        self.col_path = 'caminho_imagem' if 'caminho_imagem' in df.columns else ('path' if 'path' in df.columns else None)
+        self.col_label = 'label' if 'label' in df.columns else ('label_number' if 'label_number' in df.columns else None)
+        
+        if not self.col_split or not self.col_path or not self.col_label:
+            raise KeyError(
+                f"\n❌ ERRO DE FORMATAÇÃO NO CSV: Não consegui mapear as colunas em '{csv_path}'.\n"
+                f"Colunas encontradas: {list(df.columns)}.\n"
+                f"Espera-se colunas de split (split ou sets), caminho (caminho_imagem ou path) e rótulo (label ou label_number)."
+            )
+        
+        self.data = df[df[self.col_split] == split].reset_index(drop=True)
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        img_relative_path = self.data.iloc[idx]['caminho_imagem']
-        label = int(self.data.iloc[idx]['label'])
+        img_relative_path = self.data.iloc[idx][self.col_path]
+        label = int(self.data.iloc[idx][self.col_label])
         
         img_path = os.path.join(self.root_dir, img_relative_path)
         image = Image.open(img_path).convert('RGB')

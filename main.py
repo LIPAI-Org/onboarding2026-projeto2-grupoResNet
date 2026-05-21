@@ -3,11 +3,11 @@ import configs.datasets.base as base
 from src.data.dataloaders import DataLoaders
 from src.modelos.modelo_factory import get_model
 from src.treino.treinador import train_model
-from treino.avaliador import evaluate_model
+from src.treino.avaliador import evaluate_model
 
 data = base.DatasetConfig(
     tipo_tarefa="binario",
-    nro_classes=2,
+    nro_classes=1,
     nome="ROI",
     tam_input=(224, 224),
     canais_input=3,
@@ -21,9 +21,6 @@ dataloaders = DataLoaders(config=data, datasets=dataset)
 train_loader, val_loader, test_loader = dataloaders.criar_dataloaders_base()
 
 model = get_model(model_name="resnet18", num_classes=data.nro_classes, training_mode="fs")
-
-print(model)
-print(f"Total de parâmetros treináveis: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
 
 results = train_model(
     model=model, 

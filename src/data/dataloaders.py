@@ -39,21 +39,21 @@ class DataLoaders:
             dataset=train_dataset, 
             batch_size=self.batch_size, 
             shuffle=True,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         val_loader = DataLoader(
             dataset=val_dataset, 
             batch_size=self.batch_size, 
             shuffle=False,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         test_loader = DataLoader(
             dataset=test_dataset, 
             batch_size=self.batch_size, 
             shuffle=False,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         return train_loader, val_loader, test_loader
@@ -66,21 +66,21 @@ class DataLoaders:
             dataset=train_dataset_aumentado, 
             batch_size=self.batch_size, 
             shuffle=True,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         val_loader = DataLoader(
             dataset=val_dataset_aumentado, 
             batch_size=self.batch_size, 
             shuffle=False,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         test_loader = DataLoader(
             dataset=test_dataset_aumentado, 
             batch_size=self.batch_size, 
             shuffle=False,
-            num_workers=4,
+            num_workers=2,
             pin_memory=True
         )
         return train_loader, val_loader, test_loader

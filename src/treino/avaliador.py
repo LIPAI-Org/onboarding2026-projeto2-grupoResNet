@@ -28,7 +28,9 @@ def evaluate_model(
     if checkpoint_path is not None:
         checkpoint = torch.load(
             checkpoint_path,
+            weights_only=False,
             map_location=device
+            
         )
         model.load_state_dict(
             checkpoint["model_state_dict"]
