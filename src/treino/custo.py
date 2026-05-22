@@ -34,11 +34,13 @@ def calcular_gflops(model, config_dataset: DatasetConfig):
     
     tensor_input = torch.randn(tam_input).to(DEVICE)
 
-    macs, _ = profile(
+    profile_result = profile(
         model,
         inputs=(tensor_input,),
         verbose=False
     )
+
+    macs = profile_result[0]
 
     gflops = (2 * macs) / 1e9
 

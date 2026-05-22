@@ -7,7 +7,7 @@ from src.modelos.modelo_resnet34 import create_resnet34
 def get_model(
     model_name,
     num_classes,
-    training_mode="fs"
+    training_mode
 ):
 
     model_name = model_name.lower()

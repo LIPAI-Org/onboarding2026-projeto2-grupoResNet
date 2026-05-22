@@ -1,1 +1,3 @@
 repetition,seed,dataset,model,training_mode,augmentation,acc_test,f1_macro_test,f1_weighted_test,num_params,gflops,best_epoch,val_acc_best
+1,42,displasia,resnet18,fs,True,0.8913043478260869,0.8900047824007652,0.8900047824007651,11177025,3.647,6,1.0
+1,42,displasia,resnet18,fs,False,0.9782608695652174,0.9782505910165484,0.9782505910165484,11177025,3.647,16,0.9736842105263158

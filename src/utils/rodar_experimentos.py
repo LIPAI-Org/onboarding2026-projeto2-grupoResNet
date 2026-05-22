@@ -3,6 +3,9 @@
 from itertools import product
 from dataclasses import asdict
 
+from torch import device
+import torch
+
 from src.data.datasets import datasets
 from src.data.dataloaders import DataLoaders
 from configs.datasets.base import DatasetConfig
@@ -10,13 +13,15 @@ from src.utils.seed import definir_seed
 from src.modelos.modelo_factory import get_model
 from src.analise.computar_complexidade import compute_model_complexity
 from src.treino.treinador import train_model
-from treino.avaliador import evaluate_model
+from src.treino.avaliador import evaluate_model
 from src.utils.escritor_csv import escrever_resultados_csv
 import configs.grid_experimentos as gdexp
 
 def rodar_experimento(
-        experimento: dict
-) -> None:
+        experimento: dict,
+        num_teste: int,
+        total_testes: int
+):
     """
     Roda um experimento específico, com experimento sendo definido como:\n
     experimento = {
@@ -30,20 +35,34 @@ def rodar_experimento(
     para os valores possíveis de cada entrada,
     referir-se ao arquivo configs/grid_experimentos.py
     """
-    seed = experimento.get("seed")
+    seed = experimento["seed"]
     definir_seed(seed)
 
-    config_dataset = DatasetConfig(**experimento.get("dataset_config"))
+    config_dataset = DatasetConfig(**experimento["dataset_config"])
 
-    modo_treinamento = experimento.get("modo_treinamento")
+    modo_treinamento = experimento["modo_treinamento"]
 
-    modelo = get_model(experimento.get("modelo"), config_dataset.nro_classes, modo_treinamento)
+    modelo = get_model(experimento["modelo"], config_dataset.nro_classes, modo_treinamento)
+    
+    print("\n" + "="*70)
+    if num_teste and total_testes:
+        print(f"[TESTE {num_teste}/{total_testes}] Configurando Ambiente...")
+    else:
+        print(f"Configurando Ambiente do Experimento...")
+    print(f"• Modelo: {experimento.get('modelo')} | Modo: {modo_treinamento}")
+    print(f"• Dataset: {experimento.get('dataset')} | Data Augmentation: {experimento.get('aumento')}")
+    print(f"• Seed: {seed}")
+    print("="*70)
+
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    modelo = modelo.to(device)
 
     complexidade = compute_model_complexity(modelo,
-                                            experimento.get("modelo"),
+                                            experimento["modelo"],
                                             config_dataset
     )
-
+    
     aumento = experimento.get("aumento")
 
     if not aumento:
@@ -57,6 +76,7 @@ def rodar_experimento(
     else:
         train_loader, val_loader, test_loader = dataloaders.criar_dataloaders_aumentados()
     
+    print(f"\n[Treino] Iniciando a execução das épocas...")
     resultados_treino = train_model(
         modelo,
         train_loader,
@@ -65,6 +85,7 @@ def rodar_experimento(
         seed
     )
 
+    print(f"[Avaliação] Computando predições no conjunto de teste...")
     resultados_teste = evaluate_model(
         modelo,
         test_loader,
@@ -72,6 +93,7 @@ def rodar_experimento(
         seed
     )
     
+    print(f"[Salvar] Registrando resultados no arquivo CSV...")
     escrever_resultados_csv(
         str(seed),
         str(experimento.get("dataset")),
@@ -86,6 +108,7 @@ def rodar_experimento(
         str(resultados_treino.get("best_epoch")),
         str(resultados_treino.get("best_val_acc"))
     )
+    print("Concluído com sucesso!\n")
 
 def rodar_experimentos_baseado_em_parametros(
         seed: int | None = None,
@@ -97,18 +120,15 @@ def rodar_experimentos_baseado_em_parametros(
     """
     Roda os experimentos a partir de valores fixos
     possivelmente passados como parâmetros.
-
-    Ex:
-    rodar_experimentos_baseado_em_parametros(seed=42, modelo="resnet18")
-
-    (Isso roda todos os experimentos em que a seed seja 42
-    e o modelo seja a resnet18).
     """
     seeds = [seed] if seed is not None else gdexp.SEEDS
     modelos = [modelo] if modelo is not None else gdexp.MODELOS
     modos_treinamento = [modo_treinamento] if modo_treinamento is not None else gdexp.MODOS_TREINAMENTO
     aumentos = [aumento] if aumento is not None else gdexp.AUMENTO
     datasetes = [dataset] if dataset is not None else list(gdexp.DATASETS.keys())
+
+    total_filtrados = len(seeds) * len(modelos) * len(datasetes) * len(modos_treinamento) * len(aumentos)
+    idx = 1
 
     for seed_i, modelo_i, dataset_i, modo_i, aumento_i in product(
         seeds,
@@ -126,11 +146,15 @@ def rodar_experimentos_baseado_em_parametros(
             "modo_treinamento": modo_i,
             "aumento": aumento_i
         }
-        rodar_experimento(experimento)
+        rodar_experimento(experimento, num_teste=idx, total_testes=total_filtrados)
+        idx += 1
 
 def rodar_todos_experimentos():
     """
     Roda todo experimento possível.
     """
-    for experimento in gdexp.GRID_EXPERIMENTOS:
-        rodar_experimento(experimento)
+    lista_experimentos = gdexp.GRID_EXPERIMENTOS
+    total_testes = len(lista_experimentos)
+    
+    for idx, experimento in enumerate(lista_experimentos, start=1):
+        rodar_experimento(experimento, num_teste=idx, total_testes=total_testes)
