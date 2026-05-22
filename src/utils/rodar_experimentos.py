@@ -16,6 +16,7 @@ from src.treino.treinador import train_model
 from src.treino.avaliador import evaluate_model
 from src.utils.escritor_csv import escrever_resultados_csv
 import configs.grid_experimentos as gdexp
+import src.analise.curvas_aprendizado as cva
 
 def rodar_experimento(
         experimento: dict,
@@ -107,6 +108,24 @@ def rodar_experimento(
         str(complexidade.get("gflops")),
         str(resultados_treino.get("best_epoch")),
         str(resultados_treino.get("best_val_acc"))
+    )
+
+    print("[Salvar] Salvando o plot de custo e acuracia...")
+    cva.plotar_e_salvar_loss(
+        str(seed),
+        str(experimento.get("modelo")),
+        str(modo_treinamento),
+        str(aumento),
+        str(experimento.get("dataset")),
+        resultados_treino.get("history")
+    )
+    cva.plotar_e_salvar_acc(
+        str(seed),
+        str(experimento.get("modelo")),
+        str(modo_treinamento),
+        str(aumento),
+        str(experimento.get("dataset")),
+        resultados_treino.get("history")
     )
     print("Concluído com sucesso!\n")
 
