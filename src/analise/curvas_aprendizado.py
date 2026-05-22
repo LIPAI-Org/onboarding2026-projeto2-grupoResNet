@@ -48,8 +48,6 @@ def plotar_e_salvar_loss(
     plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
 
-    return caminho_saida
-
 def plotar_e_salvar_acc(
         seed: str,
         nome_modelo: str,
@@ -92,5 +90,3 @@ def plotar_e_salvar_acc(
 
     plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
     plt.close()
-
-    return caminho_saida

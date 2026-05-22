@@ -1,5 +1,5 @@
 data/raw/
-__pycache__/
+**/__pycache__/
 *.pyc
 results/plots/*.png
 results/plots/globais/
