@@ -195,7 +195,7 @@ def mostrar_resumo(
         .reset_index()
     )
 
-    resumo = resumo.round(4)
+
 
     print()
     print(resumo.to_string(index=False))
