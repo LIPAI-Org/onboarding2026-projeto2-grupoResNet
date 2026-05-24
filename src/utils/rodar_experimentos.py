@@ -3,7 +3,6 @@
 from itertools import product
 from dataclasses import asdict
 
-from torch import device
 import torch
 
 from src.data.datasets import datasets
@@ -49,7 +48,7 @@ def rodar_experimento(
     if num_teste and total_testes:
         print(f"[TESTE {num_teste}/{total_testes}] Configurando Ambiente...")
     else:
-        print(f"Configurando Ambiente do Experimento...")
+        print("Configurando Ambiente do Experimento...")
     print(f"• Modelo: {experimento.get('modelo')} | Modo: {modo_treinamento}")
     print(f"• Dataset: {experimento.get('dataset')} | Data Augmentation: {experimento.get('aumento')}")
     print(f"• Seed: {seed}")
@@ -77,7 +76,7 @@ def rodar_experimento(
     else:
         train_loader, val_loader, test_loader = dataloaders.criar_dataloaders_aumentados()
     
-    print(f"\n[Treino] Iniciando a execução das épocas...")
+    print("\n[Treino] Iniciando a execução das épocas...")
     resultados_treino = train_model(
         modelo,
         train_loader,
@@ -86,7 +85,7 @@ def rodar_experimento(
         seed
     )
 
-    print(f"[Avaliação] Computando predições no conjunto de teste...")
+    print("[Avaliação] Computando predições no conjunto de teste...")
     resultados_teste = evaluate_model(
         modelo,
         test_loader,
@@ -94,7 +93,7 @@ def rodar_experimento(
         seed
     )
     
-    print(f"[Salvar] Registrando resultados no arquivo CSV...")
+    print("[Salvar] Registrando resultados no arquivo CSV...")
     escrever_resultados_csv(
         str(seed),
         str(experimento.get("dataset")),
