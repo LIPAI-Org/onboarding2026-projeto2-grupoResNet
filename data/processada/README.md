@@ -1,1 +1,1 @@
-### Colocando o readme aqui só para a pasta aparecer no github
+### Exemplos de imagens alteradas pelas operacoes de data augmentation
