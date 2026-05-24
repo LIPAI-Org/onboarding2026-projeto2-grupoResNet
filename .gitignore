@@ -1,4 +1,6 @@
 data/raw/
 **/__pycache__/
 *.pyc
-results/plots/*.pdf
+results/plots/*.png
+results/plots/globais/
+results/plots/tabelas_globais/
