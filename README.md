@@ -15,7 +15,63 @@ O sistema permite:
 
 # Estrutura do Projeto
 
-
+```text
+.
+├── configs/
+│   ├── datasets/
+│   ├── configs_base.py
+│   └── grid_experimentos.py
+│
+├── data/
+│   ├── processada/
+│   ├── raw/
+│   └── splits/
+│
+├── results/
+│   ├── figures/
+│   │   ├── globais/
+│   │   └── tabelas_globais/
+│   │
+│   ├── plots/
+│   ├── tabelas/
+│   ├── planilha_resultados.csv
+│   └── resumo_global.csv
+│
+├── src/
+│   ├── analise/
+│   │   ├── computar_complexidade.py
+│   │   ├── curvas_aprendizado.py
+│   │   ├── matriz_confusao.py
+│   │   ├── plots_globais.py
+│   │   └── visualizar_experimentos_csv.py
+│   │
+│   ├── data/
+│   │   ├── dataloaders.py
+│   │   ├── datasets.py
+│   │   └── transformadas.py
+│   │
+│   ├── modelos/
+│   │   ├── modelo_factory.py
+│   │   ├── modelo_resnet18.py
+│   │   └── modelo_resnet34.py
+│   │
+│   ├── treino/
+│   │   ├── avaliador.py
+│   │   ├── custo.py
+│   │   ├── metricas.py
+│   │   └── treinador.py
+│   │
+│   └── utils/
+│       ├── escritor_csv.py
+│       ├── paths.py
+│       ├── rodar_experimentos.py
+│       └── seed.py
+│
+├── .gitignore
+├── main.py
+├── modulos_requiridos.txt
+└── README.md
+```
 
 ---
 
