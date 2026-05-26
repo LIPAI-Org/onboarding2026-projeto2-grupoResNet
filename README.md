@@ -1,4 +1,4 @@
-### Projeto 2 - Grupo 1 - ResNet18 e ResNet34
+# Projeto 2 - Grupo 1 - ResNet18 e ResNet34
 
 Este projeto tem como objetivo realizar experimentos de classificação de imagens médicas utilizando arquiteturas ResNet com diferentes estratégias de treinamento, datasets e configurações de data augmentation.
 
