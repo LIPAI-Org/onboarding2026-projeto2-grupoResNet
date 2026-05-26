@@ -69,6 +69,22 @@ Ativar:
 
 ---
 
+### Linux / macOS
+
+Criar ambiente virtual:
+
+```bash
+python3 -m venv .venv
+```
+
+Ativar:
+
+```bash
+source .venv/bin/activate
+```
+
+---
+
 # Instalação das Dependências
 
 ```bash
