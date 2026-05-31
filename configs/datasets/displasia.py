@@ -6,8 +6,5 @@ DATASET_CONFIG = DatasetConfig(
     nome="displasia",
     tipo_tarefa="binario",
     nro_classes=1,
-    # dir_dados = (...),
-    # dir_treino = (...),
-    # dir_val = (...),
-    # dir_teste = (...)
+    labels_classes= ["Healthy", "Severe"]
 )
