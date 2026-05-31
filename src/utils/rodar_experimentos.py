@@ -3,8 +3,7 @@
 from itertools import product
 from dataclasses import asdict
 
-import torch
-
+from configs.configs_base import DEVICE
 from src.data.datasets import datasets
 from src.data.dataloaders import DataLoaders
 from configs.datasets.base import DatasetConfig
@@ -14,8 +13,10 @@ from src.analise.computar_complexidade import compute_model_complexity
 from src.treino.treinador import train_model
 from src.treino.avaliador import evaluate_model
 from src.utils.escritor_csv import escrever_resultados_csv
+from src.analise.matriz_confusao import salvar_matriz_confusao
 import configs.grid_experimentos as gdexp
 import src.analise.curvas_aprendizado as cva
+import src.utils.paths as paths
 
 def rodar_experimento(
         experimento: dict,
@@ -55,7 +56,7 @@ def rodar_experimento(
     print("="*70)
 
     
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = DEVICE
     modelo = modelo.to(device)
 
     complexidade = compute_model_complexity(modelo,
@@ -125,6 +126,12 @@ def rodar_experimento(
         str(aumento),
         str(experimento.get("dataset")),
         resultados_treino.get("history")
+    )
+    salvar_matriz_confusao(
+        cm=resultados_teste.get("confusion_matrix"),
+        path_saida=paths.PATH_MATRIZ,
+        nome_arquivo=f'{str(seed)}_{str(experimento.get("modelo"))}_{str(modo_treinamento)}_{str(experimento.get("dataset"))}',
+        classes=config_dataset.labels_classes
     )
     print("Concluído com sucesso!\n")
 

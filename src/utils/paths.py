@@ -22,4 +22,5 @@ PATH_SPLITS = PATH_DATA + "\\splits"
 PATH_SPLIT_DISPLASIA = PATH_SPLITS + "\\manifest_split_multiclass_NDB-UFES.csv"
 PATH_SPLIT_NDB = PATH_SPLITS + "\\manifest_split_oralepithelium"
 PATH_PLOTS = PATH_RESULTS + "\\plots"
+PATH_MATRIZ = PATH_RESULTS + "\\matrizes"
 # Analisar, ao longo do desenvolvimento, outros paths necessários, se for usar mt coloquem aqui!
