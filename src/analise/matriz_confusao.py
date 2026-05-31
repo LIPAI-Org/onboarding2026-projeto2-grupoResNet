@@ -1,119 +1,27 @@
 """ Gera os pdfs vetoriais da matriz de confusão """
 
 import os
-import numpy as np
 import matplotlib.pyplot as plt
-
-from sklearn.metrics import (
-    confusion_matrix,
-    ConfusionMatrixDisplay
-)
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
-def plot_confusion_matrix(
-    y_true,
-    y_pred,
-    class_names,
-    save_path,
-    normalize=False,
-    figsize=(8, 8)
-):
+def salvar_matriz_confusao(cm, path_saida, nome_arquivo="matriz_confusao.png", classes=None):
+    """
+    Salva o plot de uma matriz de confusão em disco.
 
-    cm = confusion_matrix(
-        y_true,
-        y_pred
-    )
+    Parâmetros:
+        cm: matriz de confusão já calculada com confusion_matrix(y_true, y_pred)
+        path_saida: diretório onde o arquivo será salvo
+        nome_arquivo: nome do arquivo de saída
+        classes: lista com os nomes das classes (opcional)
+    """
+    os.makedirs(path_saida, exist_ok=True)
 
-    if normalize:
-
-        cm = cm.astype("float")
-
-        cm = cm / cm.sum(
-            axis=1,
-            keepdims=True
-        )
-
-        cm = np.nan_to_num(cm)
-
-    _, ax = plt.subplots(
-    figsize=figsize
-    )
-
-    disp = ConfusionMatrixDisplay(
-        confusion_matrix=cm,
-        display_labels=class_names
-    )
-
-    disp.plot(
-        ax=ax,
-        colorbar=True
-    )
-
-    ax.set_xlabel(
-        "predicted label"
-    )
-
-    ax.set_ylabel(
-        "true label"
-    )
-
-    if normalize:
-
-        ax.set_title(
-            "normalized confusion matrix"
-        )
-
-    else:
-
-        ax.set_title(
-            "confusion matrix"
-        )
-
-    save_dir = os.path.dirname(
-        save_path
-    )
-
-    if save_dir != "":
-
-        os.makedirs(
-            save_dir,
-            exist_ok=True
-        )
+    fig, ax = plt.subplots(figsize=(6, 6))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=classes)
+    disp.plot(ax=ax, cmap="Blues", values_format="d", colorbar=False)
 
     plt.tight_layout()
-
-    plt.savefig(
-        save_path,
-        format="pdf",
-        bbox_inches="tight"
-    )
-
-    plt.close()
-
-
-def save_confusion_matrix_data(
-    y_true,
-    y_pred,
-    save_path
-):
-
-    cm = confusion_matrix(
-        y_true,
-        y_pred
-    )
-
-    save_dir = os.path.dirname(
-        save_path
-    )
-
-    if save_dir != "":
-
-        os.makedirs(
-            save_dir,
-            exist_ok=True
-        )
-
-    np.save(
-        save_path,
-        cm
-    )
+    caminho_completo = os.path.join(path_saida, nome_arquivo)
+    plt.savefig(caminho_completo, dpi=300, bbox_inches="tight")
+    plt.close(fig)

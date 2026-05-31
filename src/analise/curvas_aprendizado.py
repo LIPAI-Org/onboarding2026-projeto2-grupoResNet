@@ -38,9 +38,10 @@ def plotar_e_salvar_loss(
     plt.plot(epocas, history["train_loss"], label="Train Loss")
     plt.plot(epocas, history["val_loss"], label="Val Loss")
 
-    plt.title("Loss de Treino e Validação")
+    plt.title("Loss de Treino e Validação (0-20)")
     plt.xlabel("Época")
     plt.ylabel("Loss")
+    plt.ylim(0,20)
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
