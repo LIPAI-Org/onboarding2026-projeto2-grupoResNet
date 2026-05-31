@@ -44,7 +44,7 @@ def plotar_e_salvar_loss(
     plt.xlabel("Época")
     plt.ylabel("Loss")
     if (max(history["train_loss"]) >= LIMITE) or (max(history["val_loss"]) >= LIMITE):
-        plt.ylim(0,20)
+        plt.ylim(0,LIMITE)
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
