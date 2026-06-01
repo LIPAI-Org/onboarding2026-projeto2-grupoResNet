@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score
 
 import configs.configs_base as cb
 from src.utils.seed import definir_seed
+from src.utils.checkpoints import save_checkpoint
 from configs.datasets.base import DatasetConfig
 
 
@@ -16,7 +17,8 @@ def train_model(
     val_loader,
     config_dataset: DatasetConfig,
     seed=42,
-    scheduler=None
+    scheduler=None,
+    checkpoint_path=None
 ):
     definir_seed(seed)
     device = cb.DEVICE
@@ -140,11 +142,25 @@ def train_model(
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             best_epoch = epoch + 1
+            if checkpoint_path is not None:
+                save_checkpoint(
+                    path=checkpoint_path,
+                    modelo=model,
+                    otim=optimizer,
+                    epoca=best_epoch,
+                    best_val_acc=best_val_acc,
+                    extra={
+                        "seed": seed,
+                        "dataset": getattr(config_dataset, "nome", None)
+                    }
+                )
 
     results = {
         "history": history,
         "best_val_acc": best_val_acc,
-        "best_epoch": best_epoch
+        "best_epoch": best_epoch,
+        "checkpoint_path": checkpoint_path,
+        "otimizador": optimizer
     }
 
     return results

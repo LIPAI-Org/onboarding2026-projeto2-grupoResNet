@@ -70,6 +70,11 @@ PATH_RESUMO_GLOBAL = os.path.join(
     "resumo_global.csv"
 )
 
+PATH_CHECKPOINTS = os.path.join(
+    PATH_RESULTS,
+    "checkpoints"
+)
+
 
 # FIGURAS E PLOTS
 

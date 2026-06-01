@@ -1,6 +1,8 @@
 """ Funções para rodar os experimentos """
 
+import copy
 from itertools import product
+from pathlib import Path
 from dataclasses import asdict
 
 from configs.configs_base import DEVICE
@@ -14,6 +16,10 @@ from src.treino.treinador import train_model
 from src.treino.avaliador import evaluate_model
 from src.utils.escritor_csv import escrever_resultados_csv
 from src.analise.matriz_confusao import salvar_matriz_confusao
+from src.utils.checkpoints import (
+    save_checkpoint,
+    load_checkpoint
+)
 import configs.grid_experimentos as gdexp
 import src.analise.curvas_aprendizado as cva
 import src.utils.paths as paths
@@ -77,13 +83,21 @@ def rodar_experimento(
     else:
         train_loader, val_loader, test_loader = dataloaders.criar_dataloaders_aumentados()
     
+    checkpoint_path = f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/{experimento['modelo']}_{modo_treinamento}_seed{seed}.pth"
+
     print("\n[Treino] Iniciando a execução das épocas...")
     resultados_treino = train_model(
         modelo,
         train_loader,
         val_loader,
         config_dataset,
-        seed
+        seed,
+        checkpoint_path=checkpoint_path
+    )
+
+    load_checkpoint(
+        resultados_treino["checkpoint_path"],
+        modelo
     )
 
     print("[Avaliação] Computando predições no conjunto de teste...")
@@ -110,6 +124,30 @@ def rodar_experimento(
         str(resultados_treino.get("best_val_acc"))
     )
 
+    print("[Salvar] Comparando com o melhor do dataset...")
+    cam_melhor = Path(f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/melhor.pth")
+    cam_melhor.parent.mkdir(parents=True, exist_ok=True)
+    if cam_melhor.exists():
+        buffer = copy.deepcopy(modelo)
+        melhor = load_checkpoint(cam_melhor, buffer)
+        melhor_acc = melhor["best_val_acc"]
+        if resultados_treino.get("best_val_acc") > melhor_acc:
+            save_checkpoint(
+                path=cam_melhor,
+                modelo=modelo,
+                otim= resultados_treino.get("otimizador"),
+                epoca= resultados_treino.get("best_epoch"),
+                best_val_acc= resultados_treino.get("best_val_acc")
+            )
+    else:
+        save_checkpoint(
+            path=cam_melhor,
+            modelo=modelo,
+            otim= resultados_treino.get("otimizador"),
+            epoca= resultados_treino.get("best_epoch"),
+            best_val_acc= resultados_treino.get("best_val_acc")
+        )
+
     print("[Salvar] Salvando o plot de custo e acuracia...")
     cva.plotar_e_salvar_loss(
         str(seed),
@@ -129,7 +167,7 @@ def rodar_experimento(
     )
     salvar_matriz_confusao(
         cm=resultados_teste.get("confusion_matrix"),
-        path_saida=paths.PATH_MATRIZ,
+        path_saida=paths.PATH_MATRIZES_CONFUSAO,
         nome_arquivo=f'{str(seed)}_{str(experimento.get("modelo"))}_{str(modo_treinamento)}_{str(experimento.get("dataset"))}',
         classes=config_dataset.labels_classes
     )
