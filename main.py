@@ -1,10 +1,17 @@
-from __future__ import annotations
+"Main do projeto"
 
-from pathlib import Path
+from __future__ import annotations
 
 from src.utils.rodar_experimentos import (
     rodar_todos_experimentos,
     rodar_experimentos_baseado_em_parametros,
+)
+
+from src.utils.paths import (
+    PATH_PLANILHA_RESULTADOS,
+    PATH_PLOTS_GLOBAIS,
+    PATH_RESUMO_GLOBAL,
+    PATH_TABELAS_GLOBAIS,
 )
 
 from src.analise.visualizar_experimentos_csv import (
@@ -20,36 +27,6 @@ from src.analise.visualizar_experimentos_csv import (
 
 from src.analise.plots_globais import (
     generate_reports,
-)
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-
-DEFAULT_RESULTS_CSV = (
-    PROJECT_ROOT
-    / "results"
-    / "planilha_resultados.csv"
-)
-
-DEFAULT_GLOBAL_OUTPUT_DIR = (
-    PROJECT_ROOT
-    / "results"
-    / "figures"
-    / "globais"
-)
-
-DEFAULT_SUMMARY_CSV = (
-    PROJECT_ROOT
-    / "results"
-    / "tabelas"
-    / "resumo_global.csv"
-)
-
-DEFAULT_TABLE_PDF_DIR = (
-    PROJECT_ROOT
-    / "results"
-    / "figures"
-    / "tabelas_globais"
 )
 
 
@@ -133,7 +110,7 @@ def executar():
     while True:
         try:
             df = carregar_resultados(
-                DEFAULT_RESULTS_CSV
+                PATH_PLANILHA_RESULTADOS
             )
 
         except Exception as e:
@@ -237,10 +214,10 @@ def executar():
             print()
 
             generate_reports(
-                csv_path=DEFAULT_RESULTS_CSV,
-                output_dir=DEFAULT_GLOBAL_OUTPUT_DIR,
-                summary_csv=DEFAULT_SUMMARY_CSV,
-                table_pdf_dir=DEFAULT_TABLE_PDF_DIR,
+                csv_path=PATH_PLANILHA_RESULTADOS,
+                output_dir=PATH_PLOTS_GLOBAIS,
+                summary_csv=PATH_RESUMO_GLOBAL,
+                table_pdf_dir=PATH_TABELAS_GLOBAIS,
             )
 
             print()
@@ -268,6 +245,7 @@ def executar():
             print()
             print("OPÇÃO INVÁLIDA")
             print()
+
 
 if __name__ == "__main__":
     executar()

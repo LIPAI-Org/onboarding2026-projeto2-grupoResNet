@@ -13,24 +13,23 @@ def plotar_e_salvar_loss(
         dataset: str,
         history: dict[str, list],
     ):
-    """
-    Plota e salva a perda do treino e da validação para
-    o diretório apontado por paths.PATH_PLOTS.
-    Nota: history vem da função de treino em treinador.py, definida
-    assim:
-    history = {
-        "train_loss": [],
-        "val_loss": [],
-        "train_acc": [],
-        "val_acc": []
-    }
-    """
     
-    if not os.path.isdir(paths.PATH_PLOTS):
-        os.makedirs(paths.PATH_PLOTS, exist_ok=True)
-    
-    nome_arq = f"loss_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.pdf"
-    caminho_saida = os.path.join(paths.PATH_PLOTS, nome_arq)
+
+    if not os.path.isdir(paths.PATH_CURVAS_APRENDIZADO):
+        os.makedirs(
+            paths.PATH_CURVAS_APRENDIZADO,
+            exist_ok=True
+        )
+
+    nome_arq = (
+        f"loss_{seed}_{nome_modelo}_"
+        f"{modo_treinamento}_{aumento}_{dataset}.pdf"
+    )
+
+    caminho_saida = os.path.join(
+        paths.PATH_CURVAS_APRENDIZADO,
+        nome_arq
+    )
 
     epocas = range(1, NUM_EPOCAS + 1)
 
@@ -45,7 +44,13 @@ def plotar_e_salvar_loss(
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
+    plt.savefig(
+        caminho_saida,
+        format="pdf",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.close()
 
 def plotar_e_salvar_acc(
@@ -56,30 +61,37 @@ def plotar_e_salvar_acc(
         dataset: str,
         history: dict[str, list],
     ):
-    """
-    Plota e salva a acuracia do treino e da validação para
-    o diretório apontado por paths.PATH_PLOTS.
-    Nota: history vem da função de treino em treinador.py, definida
-    assim:
-    history = {
-        "train_loss": [],
-        "val_loss": [],
-        "train_acc": [],
-        "val_acc": []
-    }
-    """
-    
-    if not os.path.isdir(paths.PATH_PLOTS):
-        os.makedirs(paths.PATH_PLOTS, exist_ok=True)
-    
-    nome_arq = f"acc_{seed}_{nome_modelo}_{modo_treinamento}_{aumento}_{dataset}.pdf"
-    caminho_saida = os.path.join(paths.PATH_PLOTS, nome_arq)
+
+    if not os.path.isdir(paths.PATH_CURVAS_APRENDIZADO):
+        os.makedirs(
+            paths.PATH_CURVAS_APRENDIZADO,
+            exist_ok=True
+        )
+
+    nome_arq = (
+        f"acc_{seed}_{nome_modelo}_"
+        f"{modo_treinamento}_{aumento}_{dataset}.pdf"
+    )
+
+    caminho_saida = os.path.join(
+        paths.PATH_CURVAS_APRENDIZADO,
+        nome_arq
+    )
 
     epocas = range(1, NUM_EPOCAS + 1)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(epocas, history["train_acc"], label="Acuracia Treino")
-    plt.plot(epocas, history["val_acc"], label="Acuracia Validacao")
+    plt.plot(
+        epocas,
+        history["train_acc"],
+        label="Acuracia Treino"
+    )
+
+    plt.plot(
+        epocas,
+        history["val_acc"],
+        label="Acuracia Validacao"
+    )
 
     plt.title("Acuracia de Treino e Validação")
     plt.xlabel("Época")
@@ -88,5 +100,11 @@ def plotar_e_salvar_acc(
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
 
-    plt.savefig(caminho_saida, format="pdf", dpi=300, bbox_inches="tight")
+    plt.savefig(
+        caminho_saida,
+        format="pdf",
+        dpi=300,
+        bbox_inches="tight"
+    )
+
     plt.close()

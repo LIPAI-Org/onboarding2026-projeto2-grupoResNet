@@ -2,19 +2,16 @@
 
 from __future__ import annotations
 
+import os
 import argparse
-from pathlib import Path
+from src.utils.paths import (
+    PATH_PLANILHA_RESULTADOS,
+)
 
 import pandas as pd
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-DEFAULT_CSV_PATH = (
-    PROJECT_ROOT
-    / "results"
-    / "planilha_resultados.csv"
-)
+DEFAULT_CSV_PATH = PATH_PLANILHA_RESULTADOS
 
 
 DISPLAY_COLUMNS = [
@@ -34,10 +31,9 @@ DISPLAY_COLUMNS = [
 ]
 
 
-def carregar_resultados(csv_path: str | Path) -> pd.DataFrame:
-    csv_path = Path(csv_path)
+def carregar_resultados(csv_path: str) -> pd.DataFrame:
 
-    if not csv_path.exists():
+    if not os.path.exists(csv_path):
         raise FileNotFoundError(
             f"CSV não encontrado: {csv_path}"
         )

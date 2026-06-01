@@ -3,7 +3,15 @@
 from __future__ import annotations
 
 import argparse
+
 from pathlib import Path
+
+from src.utils.paths import (
+    PATH_PLANILHA_RESULTADOS,
+    PATH_PLOTS_GLOBAIS,
+    PATH_RESUMO_GLOBAL,
+    PATH_TABELAS_GLOBAIS,
+)
 
 import numpy as np
 import pandas as pd
@@ -27,11 +35,13 @@ REQUIRED_COLUMNS = {
 }
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CSV_PATH = PROJECT_ROOT / "results" / "planilha_resultados.csv"
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "results" / "figures" / "globais"
-DEFAULT_SUMMARY_CSV = PROJECT_ROOT / "results" / "tabelas" / "resumo_global.csv"
-DEFAULT_TABLE_PDF_DIR = PROJECT_ROOT / "results" / "figures" / "tabelas_globais"
+DEFAULT_CSV_PATH = PATH_PLANILHA_RESULTADOS
+
+DEFAULT_OUTPUT_DIR = PATH_PLOTS_GLOBAIS
+
+DEFAULT_SUMMARY_CSV = PATH_RESUMO_GLOBAL
+
+DEFAULT_TABLE_PDF_DIR = PATH_TABELAS_GLOBAIS
 
 
 MODEL_PRETTY = {
