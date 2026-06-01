@@ -5,6 +5,8 @@ import os
 import src.utils.paths as paths
 from configs.configs_base import NUM_EPOCAS
 
+LIMITE = 20
+
 def plotar_e_salvar_loss(
         seed: str,
         nome_modelo: str,
@@ -37,9 +39,11 @@ def plotar_e_salvar_loss(
     plt.plot(epocas, history["train_loss"], label="Train Loss")
     plt.plot(epocas, history["val_loss"], label="Val Loss")
 
-    plt.title("Loss de Treino e Validação")
+    plt.title("Loss de Treino e Validação (0-20)")
     plt.xlabel("Época")
     plt.ylabel("Loss")
+    if (max(history["train_loss"]) >= LIMITE) or (max(history["val_loss"]) >= LIMITE):
+        plt.ylim(0,LIMITE)
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()

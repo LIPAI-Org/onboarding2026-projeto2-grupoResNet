@@ -355,6 +355,7 @@ def plot_f1_global(
     width = 0.8 / max(len(model_order), 1)
 
     fig, ax = plt.subplots(figsize=(14, 6))
+    melhor_mean = 0
 
     for idx, model_name in enumerate(model_order):
         model_df = ds[ds["model_label"] == model_name]
@@ -385,6 +386,7 @@ def plot_f1_global(
             capsize=4,
             label=model_name,
         )
+        melhor_mean = max(means)
 
     x_labels = [f"{mode}\n{aug}" for mode, aug in condition_order]
     ax.set_xticks(x)
@@ -393,6 +395,11 @@ def plot_f1_global(
     ax.set_title(f"{y_label} global - {dataset_name}")
     ax.set_ylim(0.0, 1.05)
     ax.grid(axis="y", linestyle="--", alpha=0.3)
+    ax.axhline(y=melhor_mean,
+               linestyle='--',
+               linewidth=1.5,
+               label=f'Maximo ({melhor_mean})'
+    )
     ax.legend(title="Arquitetura")
 
     plt.tight_layout()

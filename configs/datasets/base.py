@@ -9,14 +9,9 @@ class DatasetConfig:
     tipo_tarefa: TipoTarefa
     nro_classes: int
     nome: str 
+    labels_classes : list[str]
     tam_input: tuple[int, int] = (224, 224)
     canais_input: int = 3   # RGB
-
-    # caminhos
-    dir_dados: str = ""
-    dir_treino: str = ""
-    dir_val: str = ""
-    dir_teste: str = ""
 
     # pré-processamento
     normalizacao_mean: tuple[float, float, float] = (0.485, 0.456, 0.406)

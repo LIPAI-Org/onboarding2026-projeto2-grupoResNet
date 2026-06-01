@@ -10,7 +10,6 @@ PATH_RAIZ = os.path.dirname(
     )
 )
 
-
 # DIRETÓRIOS PRINCIPAIS
 
 PATH_CONFIGS = os.path.join(

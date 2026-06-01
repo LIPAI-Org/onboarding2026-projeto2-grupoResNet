@@ -6,8 +6,5 @@ DATASET_CONFIG = DatasetConfig(
     nome="ndb",
     tipo_tarefa="multi",
     nro_classes=3,
-    # dir_dados = (...),
-    # dir_treino = (...),
-    # dir_val = (...),
-    # dir_teste = (...)
+    labels_classes=["LO c/ displasia", "LO s/ displasia", "OSCC"]
 )
