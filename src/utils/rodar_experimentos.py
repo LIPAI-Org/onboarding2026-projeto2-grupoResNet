@@ -165,10 +165,11 @@ def rodar_experimento(
         str(experimento.get("dataset")),
         resultados_treino.get("history")
     )
+    print("[Salvar] Salvando a matriz de confusão...")
     salvar_matriz_confusao(
         cm=resultados_teste.get("confusion_matrix"),
         path_saida=paths.PATH_MATRIZES_CONFUSAO,
-        nome_arquivo=f'{str(seed)}_{str(experimento.get("modelo"))}_{str(modo_treinamento)}_{str(experimento.get("dataset"))}',
+        nome_arquivo=f'{str(seed)}_{str(experimento.get("modelo"))}_{experimento.get("aumento")}_{str(modo_treinamento)}_{str(experimento.get("dataset"))}',
         classes=config_dataset.labels_classes
     )
     print("Concluído com sucesso!\n")
