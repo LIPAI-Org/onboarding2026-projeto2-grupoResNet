@@ -83,7 +83,7 @@ def rodar_experimento(
     else:
         train_loader, val_loader, test_loader = dataloaders.criar_dataloaders_aumentados()
     
-    checkpoint_path = f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/{experimento['modelo']}_{modo_treinamento}_seed{seed}.pth"
+    checkpoint_path = f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/{experimento['modelo']}_{experimento.get("aumento")}_{modo_treinamento}_seed{seed}.pth"
 
     print("\n[Treino] Iniciando a execução das épocas...")
     resultados_treino = train_model(
