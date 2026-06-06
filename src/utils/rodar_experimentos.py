@@ -125,7 +125,7 @@ def rodar_experimento(
     )
 
     print("[Salvar] Comparando com o melhor do dataset...")
-    cam_melhor = Path(f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/melhor.pth")
+    cam_melhor = Path(f"{paths.PATH_CHECKPOINTS}/{experimento['dataset']}/melhor_{experimento["modelo"]}.pth")
     cam_melhor.parent.mkdir(parents=True, exist_ok=True)
     if cam_melhor.exists():
         buffer = copy.deepcopy(modelo)
@@ -222,3 +222,43 @@ def rodar_todos_experimentos():
     
     for idx, experimento in enumerate(lista_experimentos, start=1):
         rodar_experimento(experimento, num_teste=idx, total_testes=total_testes)
+
+# APAGAR DEPOIS PELO AMOR DE DEUS
+def rodar_experimentos_excluindo_modelo_seed(
+        modelo_excluido: str,
+        seed_excluida: int,
+        modo_treinamento: str | None = None,
+        aumento: bool | None = None,
+        dataset: str | None = None,
+):
+    """
+    Roda todos os experimentos, exceto aqueles em que
+    o modelo e a seed coincidam com o par excluído.
+    """
+    seeds = gdexp.SEEDS
+    modelos = gdexp.MODELOS
+    modos_treinamento = [modo_treinamento] if modo_treinamento is not None else gdexp.MODOS_TREINAMENTO
+    aumentos = [aumento] if aumento is not None else gdexp.AUMENTO
+    datasetes = [dataset] if dataset is not None else list(gdexp.DATASETS.keys())
+
+    experimentos = [
+        (seed_i, modelo_i, dataset_i, modo_i, aumento_i)
+        for seed_i, modelo_i, dataset_i, modo_i, aumento_i in product(
+            seeds, modelos, datasetes, modos_treinamento, aumentos
+        )
+        if not (modelo_i == modelo_excluido and seed_i == seed_excluida)
+    ]
+
+    total_filtrados = len(experimentos)
+
+    for idx, (seed_i, modelo_i, dataset_i, modo_i, aumento_i) in enumerate(experimentos, start=1):
+        config_dataset = gdexp.DATASETS[dataset_i]
+        experimento = {
+            "seed": seed_i,
+            "modelo": modelo_i,
+            "dataset": dataset_i,
+            "dataset_config": asdict(config_dataset),
+            "modo_treinamento": modo_i,
+            "aumento": aumento_i
+        }
+        rodar_experimento(experimento, num_teste=idx, total_testes=total_filtrados)

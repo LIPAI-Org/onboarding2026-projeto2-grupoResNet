@@ -5,6 +5,7 @@ from __future__ import annotations
 from src.utils.rodar_experimentos import (
     rodar_todos_experimentos,
     rodar_experimentos_baseado_em_parametros,
+    rodar_experimentos_excluindo_modelo_seed #TIRA TIRA TIRA TIRA
 )
 
 from src.utils.paths import (
@@ -113,7 +114,7 @@ def executar():
                 PATH_PLANILHA_RESULTADOS
             )
 
-        except Exception as e:
+        except (ValueError, FileNotFoundError) as e:
             print()
             print("ERRO AO CARREGAR CSV")
             print(e)
@@ -240,6 +241,12 @@ def executar():
             print("ENCERRANDO...")
             print()
             break
+
+        elif opcao == "11":
+            rodar_experimentos_excluindo_modelo_seed(
+                modelo_excluido="resnet18",
+                seed_excluida=42
+            )
 
         else:
             print()

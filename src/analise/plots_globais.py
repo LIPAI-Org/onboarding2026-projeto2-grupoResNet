@@ -386,7 +386,9 @@ def plot_f1_global(
             capsize=4,
             label=model_name,
         )
-        melhor_mean = max(means)
+        temp_melhor = max(means)
+        if temp_melhor > melhor_mean:
+            melhor_mean = max(means)
 
     x_labels = [f"{mode}\n{aug}" for mode, aug in condition_order]
     ax.set_xticks(x)
