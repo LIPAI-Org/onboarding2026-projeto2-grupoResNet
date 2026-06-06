@@ -4,3 +4,4 @@ data/raw/
 results/plots/*.png
 results/plots/globais/
 results/plots/tabelas_globais/
+results/checkpoints/
