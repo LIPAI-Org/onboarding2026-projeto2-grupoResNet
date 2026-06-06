@@ -104,6 +104,11 @@ PATH_CURVAS_APRENDIZADO = os.path.join(
     "curvas_aprendizado"
 )
 
+PATH_GRAD_CAM = os.path.join(
+    PATH_FIGURES,
+    "gradcams"
+)
+
 # CSVs E RELATÓRIOS
 
 PATH_CSVS = os.path.join(
