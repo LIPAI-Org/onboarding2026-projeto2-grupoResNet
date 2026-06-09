@@ -22,8 +22,16 @@ def save_checkpoint(path, modelo, otim, epoca, best_val_acc, extra=None):
 
 def load_checkpoint(path, modelo, otim=None):
     checkpoint = torch.load(path, map_location=DEVICE, weights_only=False)
-    modelo.load_state_dict(checkpoint["modelo_state_dict"])
+    state_dict = checkpoint["modelo_state_dict"]
 
+    # Remove chaves extras de contagem de ops/params
+    state_dict = {
+        k: v for k, v in state_dict.items()
+        if "total_ops" not in k and "total_params" not in k
+    }
+
+    modelo.load_state_dict(state_dict, strict=True)
+    
     if otim is not None and "otim_state_dict" in checkpoint:
         otim.load_state_dict(checkpoint["otim_state_dict"])
 

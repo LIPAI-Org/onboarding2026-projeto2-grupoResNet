@@ -11,6 +11,28 @@ from configs.configs_base import DEVICE
 from src.utils.seed import definir_seed
 from src.utils.paths import PATH_GRAD_CAM
 
+import numpy as np
+import torch
+import matplotlib.pyplot as plt
+
+
+def _desnormalizar_tensor(x, media, desvio):
+    media = torch.tensor(media, device=x.device).view(-1, 1, 1)
+    desvio = torch.tensor(desvio, device=x.device).view(-1, 1, 1)
+    return x * desvio + media
+
+
+def _tensor_para_imagem(x, media, desvio):
+    x = _desnormalizar_tensor(x, media, desvio)
+    x = x.permute(1, 2, 0).detach().cpu().numpy()
+    x = np.clip(x, 0.0, 1.0)
+    return x
+
+
+def _superpor_cam(imagem, cam, alpha=0.45):
+    cmap = plt.get_cmap("jet")(cam)[..., :3]
+    return np.clip((1 - alpha) * imagem + alpha * cmap, 0.0, 1.0)
+
 class GradCAM:
     def __init__(self, modelo, layer_alvo):
         self.modelo = modelo.eval()
@@ -36,26 +58,32 @@ class GradCAM:
         self.modelo.zero_grad()
         logits = self.modelo(x)
 
-        if class_idx is None:
-            class_idx = logits.argmax(dim=1).item()
+        if logits.dim() != 2:
+            raise ValueError(f"Saída inesperada do modelo: {logits.shape}")
 
-        score = logits[0, class_idx]
+        n_saidas = logits.size(1)
+
+        if n_saidas == 1:
+            score = logits[0, 0]
+            classe_usada = 0
+        else:
+            if class_idx is None:
+                class_idx = logits.argmax(dim=1).item()
+            classe_usada = int(class_idx)
+            score = logits[0, classe_usada]
+
         score.backward()
 
-        # Pesos = média dos gradientes na dimensão espacial
         pesos = self.gradientes.mean(dim=(2, 3), keepdim=True)
-
-        # Combina pesos com ativações
         cam = (pesos * self.ativacoes).sum(dim=1, keepdim=True)
         cam = F.relu(cam)
 
-        # Normaliza para [0, 1]
         cam = F.interpolate(cam, size=x.shape[2:], mode="bilinear", align_corners=False)
         cam = cam[0, 0]
         cam = cam - cam.min()
         cam = cam / (cam.max() + 1e-8)
 
-        return cam.cpu(), class_idx
+        return cam.cpu(), classe_usada
     
 def _extrair_entrada_modelo(item, indice):
     if isinstance(item, dict):
@@ -153,6 +181,9 @@ def gerar_pdfs_gradcam(
             try:
                 for rotulo, indices in amostras.items():
                     nome_classe = classes[rotulo] if rotulo < len(classes) else str(rotulo)
+                    nome_dataset = str(config_dataset.nome).replace("/", "_").replace("\\", "_").replace(":", "_")
+                    nome_classe = str(classes[rotulo]).replace("/", "_").replace("\\", "_").replace(":", "_")
+                    nome_modelo = str(nome_modelo).replace("/", "_").replace("\\", "_").replace(":", "_")
                     pdf_saida = (
                         pasta_saida
                         / f"gradcam_{nome_dataset}_classe_{nome_classe}_modelo_{nome_modelo}.pdf"
@@ -174,35 +205,44 @@ def gerar_pdfs_gradcam(
                             with torch.no_grad():
                                 logits_pre = modelo(x)
                             if config_dataset.is_binario:
-                                if logits_pre.shape[1] == 1:
-                                    probas = torch.sigmoid(logits_pre)[0, 0]
-                                    classe_prevista = int((probas >= 0.5).item())
-                                    certeza = float(probas.item() if classe_prevista == 1 else (1.0 - probas.item()))
+                                if logits_pre.size(1) == 1:
+                                    probas = torch.sigmoid(logits_pre)[0, 0].item()
+                                    classe_prevista = 1 if probas >= 0.5 else 0
+                                    certeza = probas if classe_prevista == 1 else (1.0 - probas)
+                                    class_idx_gradcam = 0
                                 else:
                                     probas = torch.softmax(logits_pre, dim=1)[0]
                                     classe_prevista = int(torch.argmax(probas).item())
                                     certeza = float(probas[classe_prevista].item())
+                                    class_idx_gradcam = classe_prevista
                             else:
                                 probas = torch.softmax(logits_pre, dim=1)[0]
                                 classe_prevista = int(torch.argmax(probas).item())
                                 certeza = float(probas[classe_prevista].item())
+                                class_idx_gradcam = classe_prevista
 
-                            cam, classe_gradcam = gradcam(x, class_idx=classe_prevista)
-                            y_predito = classes[classe_gradcam] if classe_gradcam < len(classes) else str(classe_gradcam)
+                            cam, _ = gradcam(x, class_idx=class_idx_gradcam)
+                            imagem_visivel = _tensor_para_imagem(
+                                x[0],
+                                config_dataset.normalizacao_mean,
+                                config_dataset.normalizacao_std
+                            )
+                            cam_np = cam.numpy()
+                            imagem_superposta = _superpor_cam(imagem_visivel, cam_np, alpha=0.45)
 
                             fig, eixos = plt.subplots(1, 3, figsize=(15, 5))
 
-                            eixos[0].imshow(imagem_original)
+                            eixos[0].imshow(imagem_visivel)
                             eixos[0].set_title("imagem original")
                             eixos[0].axis("off")
 
-                            eixos[1].imshow(cam.numpy(), cmap="jet")
+                            eixos[1].imshow(cam_np, cmap="jet")
                             eixos[1].set_title("Grad-CAM")
                             eixos[1].axis("off")
 
-                            eixos[2].imshow(imagem_original)
+                            eixos[2].imshow(imagem_superposta)
                             eixos[2].imshow(cam.numpy(), cmap="jet", alpha=0.45)
-                            eixos[2].set_title(f"Grad-CAM: {y_predito} {certeza:.2%}")
+                            eixos[2].set_title(f"Grad-CAM: {classes[classe_prevista]} {certeza:.2%}")
                             eixos[2].axis("off")
 
                             fig.suptitle(

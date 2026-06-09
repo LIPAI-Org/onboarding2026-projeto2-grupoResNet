@@ -1,11 +1,13 @@
 "Main do projeto"
 
 from __future__ import annotations
+from os.path import join
 
+import configs.datasets.displasia as disp
+import configs.datasets.ndb_ufes as ndb
 from src.utils.rodar_experimentos import (
     rodar_todos_experimentos,
     rodar_experimentos_baseado_em_parametros,
-    rodar_experimentos_excluindo_modelo_seed #TIRA TIRA TIRA TIRA
 )
 
 from src.utils.paths import (
@@ -13,6 +15,7 @@ from src.utils.paths import (
     PATH_PLOTS_GLOBAIS,
     PATH_RESUMO_GLOBAL,
     PATH_TABELAS_GLOBAIS,
+    PATH_CHECKPOINTS,
 )
 
 from src.analise.visualizar_experimentos_csv import (
@@ -29,6 +32,11 @@ from src.analise.visualizar_experimentos_csv import (
 from src.analise.plots_globais import (
     generate_reports,
 )
+
+from src.data.datasets import datasets
+from src.utils.checkpoints import load_checkpoint
+from src.modelos.modelo_factory import get_model
+from configs.gradcam import gerar_pdfs_gradcam
 
 
 def limpar_texto(valor):
@@ -103,7 +111,8 @@ def menu():
     print("7 - Gerar gráficos globais")
     print("8 - Rodar TODOS os experimentos")
     print("9 - Rodar experimentos filtrados")
-    print("10 - Sair")
+    print("10 - Produzir os Grad-CAMs")
+    print("11 - Sair")
     print()
 
 
@@ -237,16 +246,87 @@ def executar():
             print()
 
         elif opcao == "10":
+            bufferROI = datasets(config=disp.DATASET_CONFIG,
+                                 escolha_transformada='base')
+            bufferNDB = datasets(config= ndb.DATASET_CONFIG,
+                                 escolha_transformada='base')
+            _, _, test_ROI = bufferROI.carregar_dados_ROI_base()
+            _, _, test_NDB = bufferNDB.carregar_dados_NDB_base()
+            datasetes = [
+                {"dataset": test_ROI, "config": disp.DATASET_CONFIG},
+                {"dataset": test_NDB, "config": ndb.DATASET_CONFIG}
+            ]
+            
+            r18roi = get_model(
+                model_name="resnet18",
+                num_classes=disp.DATASET_CONFIG.nro_classes,
+                training_mode="fs"
+            )
+            r34roi = get_model(
+                model_name="resnet34",
+                num_classes=disp.DATASET_CONFIG.nro_classes,
+                training_mode="fs"
+            )
+            r18ndb = get_model(
+                model_name="resnet18",
+                num_classes=ndb.DATASET_CONFIG.nro_classes,
+                training_mode="fs"
+            )
+            r34ndb = get_model(
+                model_name="resnet34",
+                num_classes=ndb.DATASET_CONFIG.nro_classes,
+                training_mode="fs"
+            )
+            a = load_checkpoint(
+                path= join(PATH_CHECKPOINTS, "displasia/melhor_resnet18.pth"),
+                modelo=r18roi
+            )
+            b = load_checkpoint(
+                path= join(PATH_CHECKPOINTS, "displasia/melhor_resnet34.pth"),
+                modelo=r34roi
+            )
+            c = load_checkpoint(
+                path= join(PATH_CHECKPOINTS, "ndb/melhor_resnet18.pth"),
+                modelo=r18ndb
+            )
+            d = load_checkpoint(
+                path= join(PATH_CHECKPOINTS, "ndb/melhor_resnet34.pth"),
+                modelo=r34ndb
+            )
+            melhor_roi = r18roi if a["best_val_acc"] > b["best_val_acc"] else r34roi
+            melhor_ndb = r18ndb if c["best_val_acc"] > d["best_val_acc"] else r34ndb
+            modelos = [
+                {
+                 "nome": "Melhor ROI",
+                 "modelo": melhor_roi,
+                 "layer_alvo": melhor_roi.layer4[-1],
+                 "config": disp.DATASET_CONFIG
+                },
+                {
+                 "nome": "Melhor NDB",
+                 "modelo": melhor_ndb,
+                 "layer_alvo": melhor_ndb.layer4[-1],
+                 "config": ndb.DATASET_CONFIG
+                }
+            ]
+
+            gerar_pdfs_gradcam(
+                datasets= [datasetes[0]],
+                modelos= [modelos[0]],
+                n_por_classe=2
+            )
+
+            gerar_pdfs_gradcam(
+                datasets= [datasetes[1]],
+                modelos= [modelos[1]],
+                n_por_classe=2
+            )
+
+        elif opcao == "11":
             print()
             print("ENCERRANDO...")
             print()
             break
-
-        elif opcao == "11":
-            rodar_experimentos_excluindo_modelo_seed(
-                modelo_excluido="resnet18",
-                seed_excluida=42
-            )
 
         else:
             print()
